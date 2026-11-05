@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+include = ["gapstop*"]
+namespaces = false
+
+[project]
+name = "CETS_GAPSTOP"
+version = "0.1"
+description = "Universal data standard for cryoET"
+license = {file = "LICENSE"}
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
+]
+
+dependencies = [
+    "mrcfile",
+    "numpy>=1.20.0",
+    "pydantic>=2",
+]
+
+optional-dependencies.dev = [
+    "deepdiff",
+    "mypy==1.8.0",  # this version should match the one in .pre-commit-config.yaml
+    "pre-commit",
+    "pytest",
+    "types-setuptools",
+    "ruff==0.11.12", # this version should match the one in .pre-commit-config.yaml
+]
+
+optional-dependencies.docs = [
+    "sphinx",
+    "sphinx-argparse",
+    "sphinx-rtd-theme",
+    "autodoc_pydantic",
+]
+
+[project.urls]
+Repository = "https://github.com/TomoBabel/cets-gapstop"
+
+[tool.mypy]
+files = ["src", "utils", "tests"]
+python_version = "3.11"
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = ["gemmi", "mrcfile", "tiffile", "networkx", "matplotlib.pyplot", "yaml.*"]
+ignore_missing_imports = true
