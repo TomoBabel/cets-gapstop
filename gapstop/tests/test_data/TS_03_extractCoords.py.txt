@@ -1,0 +1,20 @@
+
+from cryocat import tmana        
+
+tmana.scores_extract_particles(
+scores_map='Runs/000301_ProtGapStopTemplateMatching/extra/TS_03/results/scores_0_1.mrc',
+angles_map='Runs/000301_ProtGapStopTemplateMatching/extra/TS_03/results/angles_0_1.mrc',
+angles_list='Runs/000301_ProtGapStopTemplateMatching/extra/angles_15_C6.txt',
+tomo_id=1,
+particle_diameter=10.0,
+object_id=None,
+scores_threshold=0.08449986168742374,
+sigma_threshold=None,
+cluster_size=None,
+n_particles=None,
+output_path='Runs/000388_ProtGapStopExtractCoords/extra/TS_03/particleList.em',
+output_type='emmotl',
+angles_order='zxz',
+symmetry='C6',
+angles_numbering=0,
+tomo_mask=None)

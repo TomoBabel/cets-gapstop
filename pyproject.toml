@@ -32,6 +32,7 @@ dependencies = [
     "mrcfile",
     "numpy>=1.20.0",
     "pydantic>=2",
+    "pyyaml",
 ]
 
 optional-dependencies.dev = [
@@ -54,10 +55,10 @@ optional-dependencies.docs = [
 Repository = "https://github.com/TomoBabel/cets-gapstop"
 
 [tool.mypy]
-files = ["src", "utils", "tests"]
+files = ["gapstop"]
 python_version = "3.11"
 warn_unused_configs = true
 
 [[tool.mypy.overrides]]
-module = ["gemmi", "mrcfile", "tiffile", "networkx", "matplotlib.pyplot", "yaml.*"]
+module = ["gemmi", "mrcfile", "tiffile", "networkx", "matplotlib.pyplot", "yaml.*", "cets_data_model.*"]
 ignore_missing_imports = true
