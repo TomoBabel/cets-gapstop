@@ -44,6 +44,13 @@ SHIFT_X, SHIFT_Y, SHIFT_Z = (
 )
 PHI, PSI, THETA = (MOTL_COLUMNS.index(c) for c in ("phi", "psi", "theta"))
 
+SUBTOMO_ID = MOTL_COLUMNS.index("subtomo_id")
+OBJECT_ID = MOTL_COLUMNS.index("object_id")
+CLASS = MOTL_COLUMNS.index("class")
+
+# Name of the scores map written by GAPSTOP(TM): scores_<index>_<tomo_num>.mrc
+SCORES_MAP_NAME = "scores_{index}_{tomo_num}.mrc"
+
 # Motive list positions are 1-based (cryoCAT writes the score map index + 1), while the CETS
 # array frame is 0-based.
 MOTL_POSITION_OFFSET = 1
@@ -57,3 +64,6 @@ EM_MACHINE_BYTE_ORDER = {
     6: "<",  # PC
 }
 EM_DATA_TYPES = {1: "i1", 2: "i2", 4: "i4", 5: "f4", 9: "f8"}
+# Machine and data type codes of the EM files written (little-endian float32, as cryoCAT)
+EM_MACHINE_PC = 6
+EM_DATA_TYPE_FLOAT32 = 5

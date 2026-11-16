@@ -90,6 +90,12 @@ for em_file in sorted(gapstop_dir.rglob(f"*{EM_EXT}")):
         )
         if coordinates is not None:
             write_coordinates_yaml(coordinates, scratch_dir)
+            # CETS -> GAPSTOP(TM): the same particles written back as a motive list
+            converter.cets_to_gapstop(
+                coordinates,
+                scratch_dir / f"{coordinates.id}_cets_to_gapstop.em",
+                tomo_num=tomo_num,
+            )
             n_converted += 1
 
 if not n_converted:

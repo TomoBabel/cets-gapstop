@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Optional
 
 from cets_data_model.models.models import (
@@ -8,10 +9,12 @@ from cets_data_model.models.models import (
     ProbabilityMapValueType,
 )
 from cets_data_model.utils.image_utils import get_mrc_info
-from gapstop.constants import MRC_EXT
+from gapstop.constants import MRC_EXT, SCORES_MAP_NAME
 from gapstop.utils.utils import (
+    export_mrc,
     gen_array_to_physical,
     gen_coordinate_systems,
+    get_voxel_size,
     validate_file,
 )
 
@@ -88,6 +91,57 @@ class GapstopScoreTomogram:
                     voxel_size, array_cs.name, physical_cs.name, ndim=3
                 )
             ],
+        )
+
+    def cets_to_gapstop(
+        self,
+        scores: ProbabilityMap3D,
+        output_directory: os.PathLike,
+        tomo_num: int = 1,
+        index: int = 0,
+        copy: bool = False,
+    ) -> Path:
+        """Makes the scores map of a CETS ``ProbabilityMap3D`` annotation available with the
+        name GAPSTOP(TM) gives it (scores_<index>_<tomo_num>.mrc), e.g. to extract particles
+        from it with cryocat.tmana.scores_extract_particles.
+
+        The map itself is the mrc file the annotation points to, so nothing is converted: it
+        is linked, or copied if requested or if the sampling rate of its header is not the
+        one of the annotation (the header of the copy is then updated).
+
+        CETS does not store the angles map (angles_<index>_<tomo_num>.mrc) nor the list of
+        angles of the template matching, which the particle extraction also needs.
+
+        :param scores: the scores map annotation.
+        :type scores: ProbabilityMap3D.
+
+        :param output_directory: directory in which the scores map will be written.
+        :type output_directory: os.PathLike.
+
+        :param tomo_num: numeric tomogram identifier used by GAPSTOP(TM).
+        :type tomo_num: int, optional. Defaults to 1.
+
+        :param index: index of the scores map (first number of its name).
+        :type index: int, optional. Defaults to 0.
+
+        :param copy: copy the map instead of linking it.
+        :type copy: bool, optional. Defaults to False.
+
+        :returns: the path of the scores map.
+        """
+        if scores.value_type not in (None, ProbabilityMapValueType.score.value):
+            raise ValueError(
+                f"The annotation [{scores.id}] holds values of type "
+                f"'{scores.value_type}', not template matching scores."
+            )
+        if not scores.path:
+            raise ValueError(f"The annotation [{scores.id}] has no file.")
+        return export_mrc(
+            scores.path,
+            Path(output_directory)
+            / SCORES_MAP_NAME.format(index=index, tomo_num=tomo_num),
+            voxel_size=get_voxel_size(scores),
+            copy=copy,
         )
 
     @staticmethod

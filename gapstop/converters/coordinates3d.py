@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List, Optional
 
 import numpy as np
@@ -10,14 +11,18 @@ from cets_data_model.models.models import (
 )
 from cets_data_model.utils.image_utils import get_mrc_info
 from gapstop.constants import (
+    CLASS,
     EM_EXT,
     MOTL_POSITION_OFFSET,
+    N_MOTL_COLUMNS,
+    OBJECT_ID,
     PHI,
     PSI,
     SCORE,
     SHIFT_X,
     SHIFT_Y,
     SHIFT_Z,
+    SUBTOMO_ID,
     THETA,
     TOMO_ID,
     X,
@@ -28,8 +33,10 @@ from gapstop.utils.utils import (
     euler_zxz_to_matrix,
     gen_array_to_physical,
     gen_coordinate_systems,
+    matrix_to_euler_zxz,
     read_em_motl,
     validate_file,
+    write_em_motl,
 )
 
 
@@ -153,6 +160,89 @@ class GapstopCoordinates3D:
             coordinate_systems=coordinate_systems,
             coordinate_transformations=coordinate_transformations,
         )
+
+    def cets_to_gapstop(
+        self,
+        coordinates: PointMatrixSet3D,
+        motl_file: os.PathLike,
+        tomo_num: int = 1,
+        object_id: int = 1,
+        class_id: int = 1,
+    ) -> Path:
+        """Writes the particles of a CETS ``PointMatrixSet3D`` annotation as a motive list in
+        EM format, as cryocat.tmana.scores_extract_particles does (output_type="emmotl").
+
+        Only the columns CETS holds are filled:
+
+        * x, y, z and shift_x, shift_y, shift_z: ``origin3D`` converted to the 1-based
+          positions of the motive list. Motive lists store the position as an integer voxel
+          plus a sub-voxel shift, so each position is split into the nearest voxel and the
+          rest (0 for the particles picked by GAPSTOP(TM), which are on voxels).
+        * phi, psi, theta: the Euler ZXZ angles of ``matrix3D`` (see ``matrix_to_euler_zxz``).
+          When theta is 0 or 180 they may differ from the original ones, but they describe
+          the same rotation. 0 if the annotation has no orientations.
+        * score: ``scores``. 0 if the annotation has no scores.
+        * subtomo_id: 1..N, in the order of the annotation.
+        * tomo_id, object_id and class: the given ``tomo_num``, ``object_id`` and
+          ``class_id``, as CETS does not store them.
+
+        The rest of the columns (geom1-5, subtomo_mean) are written as 0. EM motive lists are
+        float32, so the values keep about 7 significant digits.
+
+        :param coordinates: the picked particles.
+        :type coordinates: PointMatrixSet3D.
+
+        :param motl_file: path of the motive list (.em) to be written.
+        :type motl_file: os.PathLike.
+
+        :param tomo_num: numeric tomogram identifier (tomo_id column) of the particles.
+        :type tomo_num: int, optional. Defaults to 1.
+
+        :param object_id: object identifier (object_id column) of the particles.
+        :type object_id: int, optional. Defaults to 1, as cryoCAT writes.
+
+        :param class_id: class (class column) of the particles.
+        :type class_id: int, optional. Defaults to 1, as cryoCAT writes.
+
+        :returns: the path of the motive list written.
+        """
+        motl_path = Path(motl_file).expanduser()
+        if motl_path.suffix != EM_EXT:
+            raise ValueError(
+                f"Invalid file extension '{motl_path.suffix}'. Expected: {EM_EXT}"
+            )
+        origin_3d = np.array(coordinates.origin3D or [], dtype=float)
+        if origin_3d.size == 0:
+            raise ValueError(f"The annotation [{coordinates.id}] has no particles.")
+        n_particles = origin_3d.shape[0]
+        for field, values in (
+            ("matrix3D", coordinates.matrix3D),
+            ("scores", coordinates.scores),
+        ):
+            if values is not None and len(values) != n_particles:
+                raise ValueError(
+                    f"The annotation [{coordinates.id}] has {n_particles} particles, but "
+                    f"{len(values)} {field}."
+                )
+
+        motl = np.zeros((n_particles, N_MOTL_COLUMNS))
+        positions = origin_3d + MOTL_POSITION_OFFSET
+        voxels = np.floor(positions + 0.5)
+        motl[:, [X, Y, Z]] = voxels
+        motl[:, [SHIFT_X, SHIFT_Y, SHIFT_Z]] = positions - voxels
+        if coordinates.matrix3D is not None:
+            motl[:, [PHI, THETA, PSI]] = [
+                matrix_to_euler_zxz(np.array(matrix)) for matrix in coordinates.matrix3D
+            ]
+        if coordinates.scores is not None:
+            motl[:, SCORE] = coordinates.scores
+        motl[:, SUBTOMO_ID] = np.arange(1, n_particles + 1)
+        motl[:, TOMO_ID] = tomo_num
+        motl[:, OBJECT_ID] = object_id
+        motl[:, CLASS] = class_id
+        write_em_motl(motl, motl_path)
+        print(f"motive list successfully written! -> {motl_path}")
+        return motl_path
 
     @staticmethod
     def get_annotation_id(tomo_id: str) -> str:
