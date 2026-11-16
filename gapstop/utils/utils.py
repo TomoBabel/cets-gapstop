@@ -105,10 +105,13 @@ def euler_zxz_to_matrix(phi: float, theta: float, psi: float) -> np.ndarray:
     """Rotation matrix of the motive list Euler ZXZ angles (degrees):
     R = Rz(psi) @ Rx(theta) @ Rz(phi).
 
-    It is the matrix that scipion-em-gapstop builds (euler_matrix(phi, theta, psi, "szxz")) and
-    the same one cets-dynamo builds for the equivalent Dynamo angles (cryoCAT converts Dynamo
-    tables with phi = -narot, psi = -tdrot, theta = -tilt), so the orientations of both
-    converters are consistent.
+    It rotates the template into the orientation of the particle in the tomogram. It is the
+    matrix scipion-em-gapstop builds with euler_matrix(phi, theta, psi, "szxz") before
+    inverting it: since scipion-em-gapstop 3.3.1, Scipion stores the inverse (particle ->
+    reference). It is also the one cets-dynamo builds for the equivalent Dynamo angles
+    (cryoCAT converts Dynamo tables with phi = -narot, psi = -tdrot, theta = -tilt), and has
+    the same direction as the poses of cets-pytom_tm and cets-scipion, so the orientations of
+    all the converters are consistent.
     """
     return _rot_z(psi) @ _rot_x(theta) @ _rot_z(phi)
 
