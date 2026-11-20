@@ -6,10 +6,12 @@ import numpy as np
 
 from gapstop.constants import MOTL_COLUMNS, N_MOTL_COLUMNS
 
+# Test data: the files of a real GAPSTOP(TM) template matching of TS_03 (see
+# tests_cli_fixtures.py) and the excerpts below.
+DATA_DIR = Path(__file__).parent / "data"
 # Excerpt of a real GAPSTOP(TM) motive list (cryoCAT 0.2.0): the original header with the number
 # of particles set to 5, and the first 5 particles of TestGapStopTM run 000388, TS_03.
-TEST_DATA_DIR = Path(__file__).parent / "test_data"
-REAL_MOTL_EXCERPT = TEST_DATA_DIR / "TS_03_particleList_excerpt.em"
+REAL_MOTL_EXCERPT = DATA_DIR / "TS_03_particleList_excerpt.em"
 # (x, y, z, phi, psi, theta) of those particles; positions are 1-based
 REAL_MOTL_EXCERPT_ROWS = [
     (321.0, 159.0, 65.0, 285.0, -29.25, 88.26),

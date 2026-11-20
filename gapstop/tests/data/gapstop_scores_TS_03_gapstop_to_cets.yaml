@@ -1,0 +1,45 @@
+---
+width: 240
+height: 232
+depth: 70
+coordinate_systems:
+- name: TS_03_array
+  axes:
+  - name: x
+    axis_unit: pixel
+    axis_type: array
+  - name: y
+    axis_unit: pixel
+    axis_type: array
+  - name: z
+    axis_unit: pixel
+    axis_type: array
+- name: TS_03_physical
+  axes:
+  - name: x
+    axis_unit: angstrom
+    axis_type: space
+  - name: y
+    axis_unit: angstrom
+    axis_type: space
+  - name: z
+    axis_unit: angstrom
+    axis_type: space
+coordinate_transformations:
+- transformation_type: scale
+  name: array_to_physical
+  input: TS_03_array
+  output: TS_03_physical
+  scale:
+  - 21.6
+  - 21.6
+  - 21.6
+path: ./scores_0_1.mrc
+id: gapstop_scores_TS_03
+annotation_type: probability_map_3D
+name: GAPSTOP(TM) template matching scores for TS_03
+source_tomogram_id: TS_03
+annotated_object: null
+derived_from_annotation_id: null
+value_type: score
+threshold: 0.12641535829007855

@@ -12,12 +12,12 @@ from cets_data_model.models.models import (
 )
 from gapstop.converters.coordinates3d import GapstopCoordinates3D
 from gapstop.converters.score_tomogram import GapstopScoreTomogram
-from gapstop.tests import TEST_DATA_DIR, motl_row, write_em_motl, write_mrc
+from gapstop.tests import DATA_DIR, motl_row, write_em_motl, write_mrc
 from gapstop.utils.extraction import find_extraction_params, read_extraction_call
 
 # Verbatim copy of the extraction script written by scipion-em-gapstop (TestGapStopTM, run 000388,
 # TS_03). Its paths are relative to that Scipion project, so they are not found here.
-REAL_EXTRACTION_SCRIPT = TEST_DATA_DIR / "TS_03_extractCoords.py.txt"
+REAL_EXTRACTION_SCRIPT = DATA_DIR / "TS_03_extractCoords.py.txt"
 
 EXTRACTION_SCRIPT = """from cryocat import tmana
 

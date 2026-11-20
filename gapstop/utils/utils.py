@@ -252,6 +252,8 @@ def export_mrc(
         return dst
     shutil.copyfile(src, dst)
     if fix_header:
-        with mrcfile.open(dst, mode="r+", header_only=True, permissive=True) as mrc:
+        # Memory-mapped, so only the header is rewritten: a file opened with
+        # header_only=True in "r+" mode is truncated to its header when closed.
+        with mrcfile.mmap(dst, mode="r+", permissive=True) as mrc:
             mrc.voxel_size = voxel_size
     return dst

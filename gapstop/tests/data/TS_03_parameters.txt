@@ -1,0 +1,10 @@
+============================================================
+TS_03
+============================================================
+--voltage 300.000000
+--spherical-aberration 2.700000
+--amplitude-contrast 0.070000
+--dose-rate 3.0
+--tilt-axis-angle 85.3
+--ctf-corrected False
+--pixel-size 21.6

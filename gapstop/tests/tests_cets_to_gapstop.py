@@ -143,6 +143,11 @@ class CetsToGapstopScoresTest(CetsToGapstopBaseTest):
         self.assertFalse(out.is_symlink())
         with mrcfile.open(out, header_only=True) as mrc:
             self.assertAlmostEqual(float(mrc.voxel_size.x), 10.8, places=5)
+        # The whole file is copied, not only its header
+        self.assertEqual(out.stat().st_size, scores_map.stat().st_size)
+        self.assertEqual(
+            mrcfile.read(out).tobytes(), mrcfile.read(scores_map).tobytes()
+        )
         with mrcfile.open(scores_map, header_only=True) as mrc:
             self.assertAlmostEqual(float(mrc.voxel_size.x), 1.0, places=5)
 
