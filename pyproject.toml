@@ -51,6 +51,9 @@ optional-dependencies.docs = [
     "autodoc_pydantic",
 ]
 
+[project.scripts]
+cets-gapstop = "gapstop.cli:main"
+
 [project.urls]
 Repository = "https://github.com/TomoBabel/cets-gapstop"
 
