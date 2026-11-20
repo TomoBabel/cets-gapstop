@@ -12,13 +12,11 @@ from cets_data_model.models.models import (
 )
 from gapstop.converters.coordinates3d import GapstopCoordinates3D
 from gapstop.converters.score_tomogram import GapstopScoreTomogram
-from gapstop.tests import DATA_DIR, motl_row, write_em_motl, write_mrc
+from gapstop.tests import motl_row, write_em_motl, write_mrc
 from gapstop.utils.extraction import find_extraction_params, read_extraction_call
 
-# Verbatim copy of the extraction script written by scipion-em-gapstop (TestGapStopTM, run 000388,
-# TS_03). Its paths are relative to that Scipion project, so they are not found here.
-REAL_EXTRACTION_SCRIPT = DATA_DIR / "TS_03_extractCoords.py.txt"
-
+# Extraction script as scipion-em-gapstop writes it (from TestGapStopTM, run 000388, TS_03, with
+# some of its arguments). Its paths are relative to the Scipion project.
 EXTRACTION_SCRIPT = """from cryocat import tmana
 
 tmana.scores_extract_particles(
@@ -60,8 +58,10 @@ class CetsGapstopExtractionParamsTest(TestCase):
         )
         return motl, scores_map
 
-    def test_real_extraction_script(self) -> None:
-        kwargs = read_extraction_call(REAL_EXTRACTION_SCRIPT)
+    def test_extraction_script(self) -> None:
+        script = self.test_dir / "extractCoords.py"
+        script.write_text(EXTRACTION_SCRIPT)
+        kwargs = read_extraction_call(script)
         assert kwargs is not None
         self.assertEqual(kwargs["tomo_id"], 1)
         self.assertAlmostEqual(kwargs["scores_threshold"], 0.08449986168742374)
@@ -70,7 +70,7 @@ class CetsGapstopExtractionParamsTest(TestCase):
         # Next to a motive list, outside its project: the scores map is not found
         motl_dir = self.test_dir / "TS_03"
         motl_dir.mkdir()
-        shutil.copy(REAL_EXTRACTION_SCRIPT, motl_dir / "extractCoords.py")
+        shutil.copy(script, motl_dir / "extractCoords.py")
         params = find_extraction_params(motl_dir / "particleList.em")
         assert params is not None
         self.assertIsNone(params.scores_map)

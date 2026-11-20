@@ -7,22 +7,22 @@ import numpy as np
 from gapstop.constants import MOTL_COLUMNS, N_MOTL_COLUMNS
 
 # Test data: the files of a real GAPSTOP(TM) template matching of TS_03 (see
-# tests_cli_fixtures.py) and the excerpts below.
+# tests_cli_fixtures.py).
 DATA_DIR = Path(__file__).parent / "data"
-# Excerpt of a real GAPSTOP(TM) motive list (cryoCAT 0.2.0): the original header with the number
-# of particles set to 5, and the first 5 particles of TestGapStopTM run 000388, TS_03.
-REAL_MOTL_EXCERPT = DATA_DIR / "TS_03_particleList_excerpt.em"
-# (x, y, z, phi, psi, theta) of those particles; positions are 1-based
-REAL_MOTL_EXCERPT_ROWS = [
-    (321.0, 159.0, 65.0, 285.0, -29.25, 88.26),
-    (342.0, 240.0, 68.0, 225.0, 23.27, 90.0),
-    (436.0, 440.0, 79.0, 225.0, 23.27, 90.0),
-    (138.0, 240.0, 103.0, 240.0, -146.7, 92.32),
-    (18.0, 326.0, 95.0, 225.0, 140.71, 85.95),
+# Its motive list (cryoCAT): 1042 particles of tomogram 1
+REAL_MOTL = DATA_DIR / "particleList.em"
+REAL_MOTL_N_PARTICLES = 1042
+# (x, y, z, phi, psi, theta) of its first 5 particles; positions are 1-based
+REAL_MOTL_FIRST_ROWS = [
+    (210.0, 144.0, 50.0, 285.0, 55.73, 87.11),
+    (218.0, 220.0, 40.0, 285.0, 23.27, 90.0),
+    (158.0, 81.0, 37.0, 45.0, -21.59, 100.48),
+    (114.0, 5.0, 33.0, 165.0, 135.98, 105.83),
+    (50.0, 64.0, 10.0, 75.0, 75.79, 91.74),
 ]
 # Voxel grid (x, y, z) and sampling rate of the tomogram / scores map of TS_03
-REAL_GRID = (480, 464, 140)
-REAL_PIXEL_SIZE = 10.8
+REAL_GRID = (240, 232, 70)
+REAL_PIXEL_SIZE = 21.6
 
 TOMO_ID = "TS_01"
 PIXEL_SIZE = 5.4

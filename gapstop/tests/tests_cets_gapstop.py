@@ -17,8 +17,9 @@ from gapstop.converters.coordinates3d import GapstopCoordinates3D
 from gapstop.tests import (
     PIXEL_SIZE,
     REAL_GRID,
-    REAL_MOTL_EXCERPT,
-    REAL_MOTL_EXCERPT_ROWS,
+    REAL_MOTL,
+    REAL_MOTL_FIRST_ROWS,
+    REAL_MOTL_N_PARTICLES,
     REAL_PIXEL_SIZE,
     TOMO_ID,
     motl_row,
@@ -49,10 +50,10 @@ class CetsGapstopBaseTest(TestCase):
 
 class CetsGapstopReaderTest(CetsGapstopBaseTest):
     def test_read_real_motl(self) -> None:
-        motl = read_em_motl(REAL_MOTL_EXCERPT)
-        self.assertEqual(motl.shape, (5, 20))
+        motl = read_em_motl(REAL_MOTL)
+        self.assertEqual(motl.shape, (REAL_MOTL_N_PARTICLES, 20))
         np.testing.assert_allclose(
-            motl[:, [7, 8, 9, 16, 17, 18]], REAL_MOTL_EXCERPT_ROWS, atol=1e-4
+            motl[:5, [7, 8, 9, 16, 17, 18]], REAL_MOTL_FIRST_ROWS, atol=1e-4
         )
 
     def test_reject_non_motl(self) -> None:
@@ -186,15 +187,16 @@ class CetsGapstopCoordinatesTest(CetsGapstopBaseTest):
         self.assertEqual(coords.id, "run_2")
         self.assertEqual(coords.annotated_object.name, "ribosome")
 
-    def test_real_motl_excerpt(self) -> None:
+    def test_real_motl(self) -> None:
         converter = GapstopCoordinates3D()
         coords = converter.gapstop_to_cets(
-            REAL_MOTL_EXCERPT, "TS_03", pixel_size=REAL_PIXEL_SIZE
+            REAL_MOTL, "TS_03", pixel_size=REAL_PIXEL_SIZE
         )
         assert coords is not None
-        expected = np.array(REAL_MOTL_EXCERPT_ROWS)
-        np.testing.assert_allclose(coords.origin3D, expected[:, :3] - 1)
-        for matrix, (phi, psi, theta) in zip(coords.matrix3D, expected[:, 3:]):
+        self.assertEqual(len(coords.origin3D), REAL_MOTL_N_PARTICLES)
+        expected = np.array(REAL_MOTL_FIRST_ROWS)
+        np.testing.assert_allclose(coords.origin3D[:5], expected[:, :3] - 1)
+        for matrix, (phi, psi, theta) in zip(coords.matrix3D[:5], expected[:, 3:]):
             np.testing.assert_allclose(
                 matrix, euler_zxz_to_matrix(phi, theta, psi), atol=1e-5
             )
@@ -208,7 +210,7 @@ class CetsGapstopCoordinatesTest(CetsGapstopBaseTest):
 
     def test_yaml_roundtrip_in_region(self) -> None:
         coords = GapstopCoordinates3D().gapstop_to_cets(
-            REAL_MOTL_EXCERPT, "TS_03", pixel_size=REAL_PIXEL_SIZE
+            REAL_MOTL, "TS_03", pixel_size=REAL_PIXEL_SIZE
         )
         assert coords is not None
         write_coordinates_yaml(coords, self.test_dir)

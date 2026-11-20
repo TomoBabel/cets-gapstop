@@ -16,10 +16,6 @@ Fixtures in ``gapstop/tests/data``:
   ``scores_0_1.mrc``, with the threshold of the particle extraction (its path is relative to
   the data directory).
 
-The directory also holds the excerpts used by the other tests
-(``TS_03_particleList_excerpt.em``, ``TS_03_extractCoords.py.txt``); the extraction script is
-not named ``extractCoords.py``, so the command line does not read it.
-
 The expected values are read from the fixtures (``read_em_motl``, mrcfile), and the outputs
 are also compared with the reference CETS files.
 """

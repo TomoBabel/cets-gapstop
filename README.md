@@ -44,7 +44,7 @@ it. Every sub-command has `--help`. Errors print a one-line message and exit wit
 
 | `coordinates to-cets` option | Meaning |
 |---|---|
-| `--motl` (required) | Motive list. |
+| `--motl` (required) | Motive list (`.em`): the particle table of the TOM/AV3 toolboxes that cryoCAT uses, with one row per particle (20 columns) holding its score, tomogram number, position (1-based voxels plus sub-voxel shift) and orientation (ZXZ Euler angles phi, psi, theta). GAPSTOP(TM) writes it when extracting the particles from the scores map (`cryocat.tmana.scores_extract_particles`). |
 | `--tomo-id` (required) | Id of the CETS tomogram (`source_tomogram_id`). It also names the coordinate systems (`<tomo id>_array`, `<tomo id>_physical`), so it must be the id of the CETS tomogram. |
 | `--tomo-num` | Numeric tomogram id (`tomo_id` column) of the particles to convert; needed if the motive list has the particles of several tomograms. |
 | `--pixel-size` | Sampling rate of the tomogram (Å). Default: the one of the reference map. Without any, only the array (voxel) coordinate system is attached. |
@@ -113,9 +113,9 @@ mypy gapstop
 
 | File | What it tests |
 |---|---|
-| `gapstop/tests/tests_cets_gapstop.py` | GAPSTOP(TM) → CETS: the motive list reader (on an excerpt of a real motive list), the Euler angles and the coordinates. |
+| `gapstop/tests/tests_cets_gapstop.py` | GAPSTOP(TM) → CETS: the motive list reader (on `particleList.em`), the Euler angles and the coordinates. |
 | `gapstop/tests/tests_cets_to_gapstop.py` | CETS → GAPSTOP(TM): motive lists and scores maps. |
-| `gapstop/tests/tests_score_tomogram.py` | The scores map converter. |
+| `gapstop/tests/tests_score_tomogram.py` | The scores map converter and the extraction script parser (on a synthetic script). |
 | `gapstop/tests/tests_cli.py` | Every `cets-gapstop` sub-command, on small synthetic files (built in a temporary directory). |
 | `gapstop/tests/tests_cli_fixtures.py` | Every `cets-gapstop` sub-command on the data of a real GAPSTOP(TM) template matching (`gapstop/tests/data`): the outputs are compared with the values of the input files and with reference CETS files, plus the round trips, the options and the errors. |
 
@@ -135,8 +135,6 @@ template matching of the tomogram of TS_03:
 | `TS_03_parameters.txt` | Acquisition of TS_03 and the voxel size of the tomogram (`--pixel-size 21.6`), the only one of its options `cets-gapstop` takes. |
 | `gapstop_coords_TS_03_gapstop_to_cets.yaml` | Reference CETS coordinates of `particleList.em`. |
 | `gapstop_scores_TS_03_gapstop_to_cets.yaml` | Reference CETS scores map of `scores_0_1.mrc` (its path is relative to the data directory). |
-| `TS_03_particleList_excerpt.em` | Excerpt of another real motive list of TS_03 (its original header, with the number of particles set to 5, and its first 5 particles), for the reader tests. |
-| `TS_03_extractCoords.py.txt` | Verbatim copy of the extraction script scipion-em-gapstop writes next to a motive list, for the tests of its parser. It is not named `extractCoords.py`, so the command line does not read it. |
 
 The reference CETS files hold what `to-cets` gives with `--tomo-id TS_03 --pixel-size 21.6`,
 plus `--score-annotation-id gapstop_scores_TS_03` for the coordinates (they are linked to the

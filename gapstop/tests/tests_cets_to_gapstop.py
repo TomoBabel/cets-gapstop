@@ -11,7 +11,7 @@ from cets_data_model.models.models import ProbabilityMapValueType
 from gapstop.converters.coordinates3d import GapstopCoordinates3D
 from gapstop.converters.score_tomogram import GapstopScoreTomogram
 from gapstop.tests import (
-    REAL_MOTL_EXCERPT,
+    REAL_MOTL,
     REAL_PIXEL_SIZE,
     TOMO_ID,
     motl_row,
@@ -60,12 +60,12 @@ class CetsToGapstopCoordinatesTest(CetsToGapstopBaseTest):
         """motive list -> CETS -> motive list gives back the original values"""
         converter = GapstopCoordinates3D()
         coords = converter.gapstop_to_cets(
-            REAL_MOTL_EXCERPT, "TS_03", pixel_size=REAL_PIXEL_SIZE
+            REAL_MOTL, "TS_03", pixel_size=REAL_PIXEL_SIZE
         )
         assert coords is not None
         out_motl = converter.cets_to_gapstop(coords, self.test_dir / "particleList.em")
         np.testing.assert_allclose(
-            read_em_motl(out_motl), read_em_motl(REAL_MOTL_EXCERPT), atol=1e-4
+            read_em_motl(out_motl), read_em_motl(REAL_MOTL), atol=1e-4
         )
 
     def test_positions_and_shifts(self) -> None:
@@ -93,7 +93,7 @@ class CetsToGapstopCoordinatesTest(CetsToGapstopBaseTest):
 
     def test_without_orientations_nor_scores(self) -> None:
         converter = GapstopCoordinates3D()
-        coords = converter.gapstop_to_cets(REAL_MOTL_EXCERPT, "TS_03")
+        coords = converter.gapstop_to_cets(REAL_MOTL, "TS_03")
         assert coords is not None
         coords = coords.model_copy(update={"matrix3D": None, "scores": None})
         out = read_em_motl(converter.cets_to_gapstop(coords, self.test_dir / "out.em"))
@@ -101,7 +101,7 @@ class CetsToGapstopCoordinatesTest(CetsToGapstopBaseTest):
 
     def test_invalid_input(self) -> None:
         converter = GapstopCoordinates3D()
-        coords = converter.gapstop_to_cets(REAL_MOTL_EXCERPT, "TS_03")
+        coords = converter.gapstop_to_cets(REAL_MOTL, "TS_03")
         assert coords is not None
         with self.assertRaises(ValueError):
             converter.cets_to_gapstop(coords, self.test_dir / "particles.star")
